@@ -1,5 +1,57 @@
-const SetQuestionQty = () => {
-  return <>Set QuestionQty</>;
+import {
+  Flex,
+  Heading,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
+} from "@chakra-ui/react";
+import { useState } from "react";
+
+const SetQuestionQty = (p: {
+  defaultValue: number;
+  max: number;
+  min: number;
+  step: number;
+}) => {
+  const [sliderValue, setSliderValue] = useState<number>(p.defaultValue);
+
+  const renderMarks = (): JSX.Element[] => {
+    const marks = [];
+    for (let index = p.min; index <= p.max; index += p.step) {
+      marks.push(
+        <SliderMark key={index} ml={-2} pt={4} value={index}>
+          {index}
+        </SliderMark>
+      );
+    }
+    return marks;
+  };
+
+  return (
+    <Flex direction={"column"} alignItems={"center"}>
+      <Heading as={"h1"} fontSize={"3xl"} mb={20}>
+        How many questions ?
+      </Heading>
+      <Slider
+        value={sliderValue}
+        maxW={400}
+        max={p.max}
+        min={p.min}
+        step={p.step}
+        colorScheme="yellow"
+        aria-label="slider-ex-6"
+        onChange={(val) => setSliderValue(val)}
+      >
+        {renderMarks()}
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb />
+      </Slider>
+    </Flex>
+  );
 };
 
 export default SetQuestionQty;

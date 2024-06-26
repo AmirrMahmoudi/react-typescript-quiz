@@ -4,6 +4,7 @@ import bubbleImg from "./assets/bubble.png";
 import "../global.css";
 import { useState } from "react";
 import SetQuestionQty from "./features/SetQuestionQty";
+import axios from "axios";
 
 enum Step {
   SetQuestionQty,
@@ -12,6 +13,9 @@ enum Step {
   Play,
   Score,
 }
+
+axios.get("https://trivial", { params: { amount: 2, category: "science" } });
+
 const App = () => {
   const [step, setStep] = useState<Step>(Step.SetQuestionQty);
 
@@ -24,7 +28,7 @@ const App = () => {
   const renderScreenByStep = () => {
     switch (step) {
       case Step.SetQuestionQty:
-        return <SetQuestionQty />;
+        return <SetQuestionQty defaultValue={10} max={30} min={5} step={5} />;
       case Step.SetQuestionCategory:
         return <></>;
       case Step.SetQuestionDiffculty:
@@ -47,7 +51,7 @@ const App = () => {
         right={-120}
         top={100}
       />
-      <Box> {renderScreenByStep()} </Box>
+      <Box mt={100}>{renderScreenByStep()}</Box>
     </Box>
   );
 };
