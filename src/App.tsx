@@ -4,7 +4,9 @@ import bubbleImg from "./assets/bubble.png";
 import "../global.css";
 import { useState } from "react";
 import SetQuestionQty from "./features/SetQuestionQty";
-import axios from "axios";
+import { FetchQuizParams, QuizDifficulty, QuizType } from "./types/quiz-type";
+import SetQuestionCategory from "./features/SetQuestionCategory";
+// import axios from "axios";
 
 enum Step {
   SetQuestionQty,
@@ -14,10 +16,18 @@ enum Step {
   Score,
 }
 
-axios.get("https://trivial", { params: { amount: 2, category: "science" } });
+// axios.get("https://trivial", { params: { amount: 2, category: "science" } });
 
 const App = () => {
   const [step, setStep] = useState<Step>(Step.SetQuestionQty);
+  const [quizParams, setQuizParams] = useState<FetchQuizParams>({
+    amount: 0,
+    category: "",
+    difficulty: QuizDifficulty.Mixed,
+    type: QuizType.Multiple,
+  });
+
+  console.log(quizParams);
 
   const header = (
     <Flex justify={"center"}>
@@ -28,9 +38,20 @@ const App = () => {
   const renderScreenByStep = () => {
     switch (step) {
       case Step.SetQuestionQty:
-        return <SetQuestionQty defaultValue={10} max={30} min={5} step={5} />;
+        return (
+          <SetQuestionQty
+            onClickNext={(amount: number) => {
+              setQuizParams({ ...quizParams, amount });
+              setStep(Step.SetQuestionCategory);
+            }}
+            defaultValue={10}
+            max={30}
+            min={5}
+            step={5}
+          />
+        );
       case Step.SetQuestionCategory:
-        return <></>;
+        return <SetQuestionCategory />;
       case Step.SetQuestionDiffculty:
         return <></>;
       case Step.Play:

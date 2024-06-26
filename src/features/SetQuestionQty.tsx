@@ -1,4 +1,6 @@
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 import {
+  Button,
   Flex,
   Heading,
   Slider,
@@ -14,6 +16,7 @@ const SetQuestionQty = (p: {
   max: number;
   min: number;
   step: number;
+  onClickNext: (amount: number) => void;
 }) => {
   const [sliderValue, setSliderValue] = useState<number>(p.defaultValue);
 
@@ -30,27 +33,38 @@ const SetQuestionQty = (p: {
   };
 
   return (
-    <Flex direction={"column"} alignItems={"center"}>
-      <Heading as={"h1"} fontSize={"3xl"} mb={20}>
-        How many questions ?
-      </Heading>
-      <Slider
-        value={sliderValue}
-        maxW={400}
-        max={p.max}
-        min={p.min}
-        step={p.step}
-        colorScheme="yellow"
-        aria-label="slider-ex-6"
-        onChange={(val) => setSliderValue(val)}
+    <>
+      <Flex direction={"column"} alignItems={"center"}>
+        <Heading as={"h1"} fontSize={"3xl"} mb={20}>
+          How many questions ?
+        </Heading>
+        <Slider
+          value={sliderValue}
+          maxW={400}
+          max={p.max}
+          min={p.min}
+          step={p.step}
+          colorScheme="yellow"
+          aria-label="slider-ex-6"
+          onChange={(val) => setSliderValue(val)}
+        >
+          {renderMarks()}
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <SliderThumb />
+        </Slider>
+      </Flex>
+      <Button
+        onClick={() => p.onClickNext(sliderValue)}
+        position={"absolute"}
+        top={"80%"}
+        right={"10%"}
+        rightIcon={<ArrowForwardIcon />}
       >
-        {renderMarks()}
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
-    </Flex>
+        Set category
+      </Button>
+    </>
   );
 };
 
