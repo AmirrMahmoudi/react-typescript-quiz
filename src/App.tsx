@@ -31,11 +31,15 @@ const App = () => {
     difficulty: QuizDifficulty.Mixed,
     type: QuizType.Multiple,
   });
+  console.log("***", quizParams);
   const [categories, setCategories] = useState<QuizCategory[]>([]);
 
   useEffect(() => {
     (async () => {
-      setCategories(await QuizAPI.fetchCategories());
+      setCategories([
+        { id: -1, name: "Mixed" },
+        ...(await QuizAPI.fetchCategories()),
+      ]);
     })();
   }, []);
   const header = (
@@ -60,7 +64,18 @@ const App = () => {
           />
         );
       case Step.SetQuestionCategory:
-        return <SetQuestionCategory categories={categories} />;
+        return (
+          <SetQuestionCategory
+            categories={categories}
+            onClickNext={(categoy: string) => {
+              setQuizParams({
+                ...quizParams,
+                category: categoy === "-1" ? "" : categoy,
+              });
+              setStep(Step.SetQuestionDifficulty);
+            }}
+          />
+        );
       case Step.SetQuestionDifficulty:
         return <></>;
       case Step.Play:

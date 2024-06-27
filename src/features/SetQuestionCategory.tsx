@@ -10,7 +10,10 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 
-export function SetQuestionCategory(p: { categories: QuizCategory[] }) {
+export function SetQuestionCategory(p: {
+  categories: QuizCategory[];
+  onClickNext: (categoryId: string) => void;
+}) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
     p.categories[0].id.toString()
   );
@@ -43,7 +46,7 @@ export function SetQuestionCategory(p: { categories: QuizCategory[] }) {
       </RadioGroup>
 
       <Button
-        onClick={() => ""}
+        onClick={() => p.onClickNext(selectedCategoryId)}
         position={"absolute"}
         top={"80%"}
         right={"10%"}
