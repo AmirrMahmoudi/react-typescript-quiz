@@ -8,11 +8,13 @@ import {
   FetchQuizParams,
   QuizCategory,
   QuizDifficulty,
+  QuizItem,
   QuizType,
 } from "./types/quiz-type";
 import SetQuestionCategory from "./features/SetQuestionCategory";
 import { QuizAPI } from "./api/quiz-api";
 import SetQuizDifficulty from "./features/SetQuizDifficulty";
+import PlayQuiz from "./features/PlayQuiz";
 
 enum Step {
   SetQuestionQty,
@@ -32,8 +34,10 @@ const App = () => {
     difficulty: QuizDifficulty.Mixed,
     type: QuizType.Multiple,
   });
-  console.log("***", quizParams);
+
   const [categories, setCategories] = useState<QuizCategory[]>([]);
+  const [quiz, setQuiz] = useState<QuizItem[]>([]);
+  console.log("***", quizParams);
 
   useEffect(() => {
     (async () => {
@@ -80,18 +84,28 @@ const App = () => {
       case Step.SetQuestionDifficulty:
         return (
           <SetQuizDifficulty
-            onClickNext={(difficulty: QuizDifficulty) => {
-              setQuizParams({
+            onClickNext={async (difficulty: QuizDifficulty) => {
+              const params = {
                 ...quizParams,
                 difficulty,
-              });
-              setStep(Step.Play);
+              };
+              setQuizParams(params);
+              const quizResp = await QuizAPI.fetchQuiz(params);
+              if (quizResp.length > 0) {
+                setQuiz(quizResp);
+                setStep(Step.Play);
+              } else {
+                alert(
+                  `Couldn't find ${params.amount} questions for this category, restarting game`
+                );
+                setStep(Step.SetQuestionQty);
+              }
             }}
           />
         );
 
       case Step.Play:
-        return <></>;
+        return <PlayQuiz quiz={quiz} />;
       case Step.Score:
         return <></>;
       default:
