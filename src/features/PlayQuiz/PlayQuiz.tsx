@@ -17,7 +17,7 @@ import Timer from "./Timer";
 
 const PlayQuiz = (p: {
   quiz: QuizItem[];
-  onFinished: (history: boolean) => void;
+  onFinished: (history: boolean[]) => void;
 }) => {
   const [answer, setAnswer] = useState<string>();
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0);
