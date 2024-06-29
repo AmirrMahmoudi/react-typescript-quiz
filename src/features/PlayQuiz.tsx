@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { QuizItem } from "../types/quiz-type";
 import {
+  Box,
   Flex,
   Heading,
+  HStack,
   Radio,
   RadioGroup,
   SimpleGrid,
@@ -13,19 +15,14 @@ import validAnim from "../assets/lottie/valid.json";
 import invalidAnim from "../assets/lottie/invalid.json";
 
 const PlayQuiz = (p: { quiz: QuizItem[] }) => {
+  const [answer, setAnswer] = useState<string>();
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0);
   const currentQuizItem: QuizItem = p.quiz[currentQuizItemIndex];
-
-  //   const availableAnswers: string[] = [
-  //     currentQuizItem.correct_answer,
-  //     ...currentQuizItem.incorrect_answers,
-  //   ];
-
-  const [availableAnswers, setAvailableAnswers] = useState<string[]>([]);
-  const [answer, setAnswer] = useState<string>();
   const [questionStatus, setQuestionStatus] = useState<
     "valid" | "invalid" | "unanswered"
   >("unanswered");
+  const [availableAnswers, setAvailableAnswers] = useState<string[]>([]);
+  const [history, setHistory] = useState<boolean[]>([]);
 
   useEffect(() => {
     setAvailableAnswers(
@@ -37,11 +34,13 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
   }, [currentQuizItemIndex]);
   useEffect(() => {
     if (answer) {
-      if (isValidAnswer(answer)) {
+      const isValid = isValidAnswer(answer);
+      if (isValid) {
         setQuestionStatus("valid");
       } else {
         setQuestionStatus("invalid");
       }
+      setHistory([...history, isValid]);
     }
   }, [answer]);
 
@@ -49,6 +48,26 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     return answer === currentQuizItem.correct_answer;
   };
 
+  const renderProgressBar = () => {
+    return (
+      <HStack>
+        {p.quiz.map((quizItem, i) => (
+          <Box
+            key={i}
+            h={3}
+            w={25}
+            backgroundColor={
+              i >= currentQuizItemIndex
+                ? "gray.200"
+                : history[i]
+                ? "green.300"
+                : "red.300"
+            }
+          />
+        ))}
+      </HStack>
+    );
+  };
   const radioList = availableAnswers.map((availableAnswer: string) => (
     <Radio key={availableAnswer} value={availableAnswer}>
       <Text
@@ -66,6 +85,7 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
 
   return (
     <Flex direction={"column"} alignItems={"center"} justify={"center"}>
+      {renderProgressBar()}
       <Heading
         fontSize={"3xl"}
         mt={100}
