@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { QuizItem } from "../types/quiz-type";
+import { QuizItem } from "../../types/quiz-type";
 import {
   Box,
   Flex,
@@ -11,8 +11,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Lottie from "lottie-react";
-import validAnim from "../assets/lottie/valid.json";
-import invalidAnim from "../assets/lottie/invalid.json";
+import validAnim from "../../assets/lottie/valid.json";
+import invalidAnim from "../../assets/lottie/invalid.json";
+import Timer from "./Timer";
 
 const PlayQuiz = (p: { quiz: QuizItem[] }) => {
   const [answer, setAnswer] = useState<string>();
@@ -48,7 +49,7 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     return answer === currentQuizItem.correct_answer;
   };
 
-  const renderProgressBar = () => {
+  const progressBar = () => {
     return (
       <HStack>
         {p.quiz.map((quizItem, i) => (
@@ -83,9 +84,19 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     </Radio>
   ));
 
+  const failQuestion = () => {
+    setHistory([...history, false]);
+    setQuestionStatus("invalid");
+  };
+
   return (
     <Flex direction={"column"} alignItems={"center"} justify={"center"}>
-      {renderProgressBar()}
+      {progressBar()}
+      {questionStatus === "unanswered" && (
+        <Box position={"absolute"} top={50} right={50}>
+          <Timer max={10} onFinished={failQuestion} />
+        </Box>
+      )}
       <Heading
         fontSize={"3xl"}
         mt={100}
