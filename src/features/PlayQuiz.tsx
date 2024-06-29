@@ -16,16 +16,25 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0);
   const currentQuizItem: QuizItem = p.quiz[currentQuizItemIndex];
 
-  const availableAnswers: string[] = [
-    currentQuizItem.correct_answer,
-    ...currentQuizItem.incorrect_answers,
-  ];
+  //   const availableAnswers: string[] = [
+  //     currentQuizItem.correct_answer,
+  //     ...currentQuizItem.incorrect_answers,
+  //   ];
 
+  const [availableAnswers, setAvailableAnswers] = useState<string[]>([]);
   const [answer, setAnswer] = useState<string>();
   const [questionStatus, setQuestionStatus] = useState<
     "valid" | "invalid" | "unanswered"
   >("unanswered");
 
+  useEffect(() => {
+    setAvailableAnswers(
+      [
+        currentQuizItem.correct_answer,
+        ...currentQuizItem.incorrect_answers,
+      ].sort(() => Math.random() - 0.5)
+    );
+  }, [currentQuizItemIndex]);
   useEffect(() => {
     if (answer) {
       if (isValidAnswer(answer)) {
@@ -42,7 +51,16 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
 
   const radioList = availableAnswers.map((availableAnswer: string) => (
     <Radio key={availableAnswer} value={availableAnswer}>
-      <Text dangerouslySetInnerHTML={{ __html: availableAnswer }}></Text>
+      <Text
+        color={
+          questionStatus === "unanswered"
+            ? "black"
+            : isValidAnswer(availableAnswer)
+            ? "green.400"
+            : "red.400"
+        }
+        dangerouslySetInnerHTML={{ __html: availableAnswer }}
+      ></Text>
     </Radio>
   ));
 
@@ -55,7 +73,10 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
         dangerouslySetInnerHTML={{ __html: currentQuizItem.question }}
       />
 
-      <RadioGroup value={answer} onChange={setAnswer}>
+      <RadioGroup
+        value={answer}
+        onChange={questionStatus === "unanswered" ? setAnswer : undefined}
+      >
         <SimpleGrid columns={2} spacing={4}>
           {radioList}
         </SimpleGrid>
