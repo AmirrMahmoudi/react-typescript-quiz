@@ -15,7 +15,10 @@ import validAnim from "../../assets/lottie/valid.json";
 import invalidAnim from "../../assets/lottie/invalid.json";
 import Timer from "./Timer";
 
-const PlayQuiz = (p: { quiz: QuizItem[] }) => {
+const PlayQuiz = (p: {
+  quiz: QuizItem[];
+  onFinished: (history: boolean) => void;
+}) => {
   const [answer, setAnswer] = useState<string>();
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0);
   const currentQuizItem: QuizItem = p.quiz[currentQuizItemIndex];
@@ -123,8 +126,12 @@ const PlayQuiz = (p: { quiz: QuizItem[] }) => {
             : invalidAnim
         }
         onComplete={() => {
-          setQuestionStatus("unanswered");
-          setCurrentQuizItemIndex(currentQuizItemIndex + 1);
+          if (currentQuizItemIndex < p.quiz.length - 1) {
+            setQuestionStatus("unanswered");
+            setCurrentQuizItemIndex(currentQuizItemIndex + 1);
+          } else {
+            p.onFinished(history);
+          }
         }}
       />
     </Flex>
